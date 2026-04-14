@@ -11,22 +11,52 @@
 </head>
 <body>
   <header>
+    <div class="header-top">
       <img src="src/images/pokemon.png" alt="Pokemon Logo">
       <span>PokéExplorer</span>
-      <button class="logout-btn">Log out</button>
-      <ul class="navigation">
-          <li class="current"><a href="./index.html" id="home">Home</a></li>
-          <li><a href="./history.html" id="history">View History</a></li>
-      </ul>
+    </div>
+
+    <nav class="navbar">
+      <div class="nav-buttons">
+        <button id="homeBtn">Search</button>
+        <button id="mapBtn">Capture</button>
+        <button id="favBtn">My Pokédex</button>
+      </div>
+    </nav>
+
   </header>
 
   <main>
-    <section class="search">
+    <!-- SEARCH -->
+    <section id="homeSection">
+      <section class="search">
         <input type="text" id="searchInput" placeholder="Enter Pokémon name..." />
         <button id="searchBtn">Search</button>
+      </section>
+
+      <section id="result"></section>
     </section>
 
-    <section id="result"></section>
+    <!-- CAPTURE -->
+    <section id="mapSection" style="display:none;">
+      <h2>Capture Pokémon</h2>
+      <div id="mapContainer" class="map-grid">
+        <div class="zone" data-zone="Quito">Quito</div>
+        <div class="zone" data-zone="Guayaquil">Guayaquil</div>
+        <div class="zone" data-zone="Cuenca">Cuenca</div>
+        <div class="zone" data-zone="Ambato">Ambato</div>
+        <div class="zone" data-zone="Loja">Loja</div>
+        <div class="zone" data-zone="Manta">Manta</div>
+      </div>
+
+      <div id="captureResult"></div>
+    </section>
+
+    <!-- FAVORITES -->
+    <section id="favSection" style="display:none;">
+      <h2>My Pokédex</h2>
+      <div id="favoritesContainer"></div>
+    </section>
       
   </main>
 
