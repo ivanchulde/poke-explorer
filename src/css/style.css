@@ -452,6 +452,52 @@ header {
   background: var(--color-secondary);
 }
 
+
+/* MODAL BACKGROUND */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* OCULTO */
+.hidden {
+  display: none;
+}
+
+/* CONTENIDO */
+.modal-content {
+  background: var(--color-white);
+  box-shadow: none;
+  padding: 20px;
+  border-radius: 20px;
+  max-width: 700px;
+  width: 90%;
+  animation: zoomIn 0.3s ease;
+}
+
+/* BOTÓN CERRAR */
+#closeModal {
+  float: right;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* ANIMACIÓN */
+@keyframes zoomIn {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+}
+
 /*--------------------- Footer-------------------------------------- */
 footer.modern-footer {
     background-color: var(--color-primary);

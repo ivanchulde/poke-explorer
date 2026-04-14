@@ -1,77 +1,85 @@
 import { getPokemon } from "./api/pokeApi.js";
 import { renderPokemon } from "./components/pokemonCard.js";
-import {updateFooterDates } from "./components/time.js";
+import { updateFooterDates } from "./components/time.js";
 
+/* =========================
+   SELECTORES
+========================= */
 const input = document.querySelector("#searchInput");
 const button = document.querySelector("#searchBtn");
+
 const home = document.getElementById("homeSection");
 const map = document.getElementById("mapSection");
 const fav = document.getElementById("favSection");
-const buttons = document.querySelectorAll(".nav-buttons button");
+
+const navButtons = document.querySelectorAll(".nav-buttons button");
+
 const zones = document.querySelectorAll(".zone");
 const captureResult = document.getElementById("captureResult");
+
 const favContainer = document.getElementById("favoritesContainer");
 
+/* MODAL */
+const modal = document.getElementById("modal");
+const modalBody = document.getElementById("modalBody");
+const closeModal = document.getElementById("closeModal");
+
+/* =========================
+   NAVIGATION
+========================= */
+function showSection(section) {
+  home.style.display = "none";
+  map.style.display = "none";
+  fav.style.display = "none";
+
+  section.style.display = "block";
+}
 
 function setActive(activeBtn) {
-  buttons.forEach(btn => btn.classList.remove("active"));
+  navButtons.forEach(btn => btn.classList.remove("active"));
   activeBtn.classList.add("active");
 }
 
 document.getElementById("homeBtn").addEventListener("click", (e) => {
-  home.style.display = "block";
-  map.style.display = "none";
-  fav.style.display = "none";
-
+  showSection(home);
   setActive(e.target);
 });
 
 document.getElementById("mapBtn").addEventListener("click", (e) => {
-  home.style.display = "none";
-  map.style.display = "block";
-  fav.style.display = "none";
-
+  showSection(map);
   setActive(e.target);
 });
 
 document.getElementById("favBtn").addEventListener("click", (e) => {
-  home.style.display = "none";
-  map.style.display = "none";
-  fav.style.display = "block";
-
+  showSection(fav);
   setActive(e.target);
+  loadPokedex();
 });
 
-
-// Evento 1: click
+/* =========================
+   SEARCH
+========================= */
 button.addEventListener("click", async () => {
   const name = input.value.toLowerCase().trim();
-
   if (!name) return;
 
   const pokemon = await getPokemon(name);
   renderPokemon(pokemon);
 });
 
-// Evento 2: enter
 input.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    button.click();
-  }
+  if (e.key === "Enter") button.click();
 });
 
-
-//CAPTURE PAGE
+/* =========================
+   CAPTURE SYSTEM
+========================= */
 zones.forEach(zone => {
   zone.addEventListener("click", async () => {
-
     const zoneName = zone.dataset.zone;
-
-    // Pokémon aleatorio (1–151)
     const randomId = Math.floor(Math.random() * 151) + 1;
 
     const pokemon = await getPokemon(randomId);
-
     showCapture(pokemon, zoneName);
   });
 });
@@ -79,18 +87,14 @@ zones.forEach(zone => {
 function showCapture(pokemon, zone) {
   captureResult.innerHTML = `
     <div class="card">
-
       <h2>${pokemon.name.toUpperCase()}</h2>
-
       <img src="${pokemon.sprites.front_default}" />
-
       <p>📍 Found in ${zone}</p>
 
       <button id="captureBtn" class="pokeball-btn">
         <span class="pokeball"></span>
         Capture
       </button>
-
     </div>
   `;
 
@@ -102,7 +106,6 @@ function showCapture(pokemon, zone) {
 function savePokemon(pokemon) {
   let saved = JSON.parse(localStorage.getItem("pokedex")) || [];
 
-  // evitar duplicados
   if (saved.find(p => p.id === pokemon.id)) {
     alert("Already captured!");
     return;
@@ -115,11 +118,12 @@ function savePokemon(pokemon) {
   });
 
   localStorage.setItem("pokedex", JSON.stringify(saved));
-
   alert("Pokémon captured! 🎉");
 }
 
-//My Pokedex
+/* =========================
+   MY POKEDEX + MODAL
+========================= */
 function loadPokedex() {
   const saved = JSON.parse(localStorage.getItem("pokedex")) || [];
 
@@ -129,7 +133,7 @@ function loadPokedex() {
   }
 
   favContainer.innerHTML = saved.map(pokemon => `
-    <div class="fav-card">
+    <div class="fav-card" data-id="${pokemon.id}">
       <h3>${pokemon.name.toUpperCase()}</h3>
       <img src="${pokemon.image}" />
       <button class="delete-btn" data-id="${pokemon.id}">
@@ -138,37 +142,56 @@ function loadPokedex() {
     </div>
   `).join("");
 
-  // eventos eliminar
+  /* DELETE */
   document.querySelectorAll(".delete-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation(); // 🔥 evita abrir modal
       removePokemon(btn.dataset.id);
+    });
+  });
+
+  /* CLICK CARD → MODAL */
+  document.querySelectorAll(".fav-card").forEach(card => {
+    card.addEventListener("click", async () => {
+      const id = card.dataset.id;
+      const pokemon = await getPokemon(id);
+
+      modalBody.innerHTML = ""; // limpiar
+
+      renderPokemon(pokemon, "#modalBody");
+
+      modal.classList.remove("hidden");
+
+      modal.classList.remove("hidden");
     });
   });
 }
 
 function removePokemon(id) {
   let saved = JSON.parse(localStorage.getItem("pokedex")) || [];
-
   saved = saved.filter(p => p.id != id);
 
   localStorage.setItem("pokedex", JSON.stringify(saved));
-
-  loadPokedex(); // recargar vista
+  loadPokedex();
 }
 
-
-// At the end of main.js after DOM is ready
-window.addEventListener("DOMContentLoaded", () => {
-  updateFooterDates(); // updates current year and last modified
+/* =========================
+   MODAL CLOSE
+========================= */
+closeModal.addEventListener("click", () => {
+  modal.classList.add("hidden");
 });
 
-document.getElementById("homeBtn").classList.add("active");
-document.getElementById("favBtn").addEventListener("click", (e) => {
-  home.style.display = "none";
-  map.style.display = "none";
-  fav.style.display = "block";
+window.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.add("hidden");
+  }
+});
 
-  setActive(e.target);
-
-  loadPokedex(); // 🔥 clave
+/* =========================
+   INIT
+========================= */
+window.addEventListener("DOMContentLoaded", () => {
+  updateFooterDates();
+  document.getElementById("homeBtn").classList.add("active");
 });

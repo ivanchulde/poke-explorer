@@ -1,5 +1,5 @@
-export function renderPokemon(pokemon) {
-  const container = document.querySelector("#result");
+export function renderPokemon(pokemon, containerId = "#result") {
+  const container = document.querySelector(containerId);
 
   if (!pokemon) {
     container.innerHTML = "<p>Pokemon not found</p>";
