@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Ivan Chulde"/>
+    <meta name="description" content="ECU 911 Ambato Vehicle Application Access Control" />
+    <title>PokéExplorer</title>
+    <link rel="stylesheet" href="src/css/style.css">
+    
+</head>
+<body>
+  <header>
+      <img src="src/images/pokemon.png" alt="Pokemon Logo">
+      <span>PokéExplorer</span>
+      <button class="logout-btn">Log out</button>
+      <ul class="navigation">
+          <li class="current"><a href="./index.html" id="home">Home</a></li>
+          <li><a href="./history.html" id="history">View History</a></li>
+      </ul>
+  </header>
+
+  <main>
+    <section class="search">
+        <input type="text" id="searchInput" placeholder="Enter Pokémon name..." />
+        <button id="searchBtn">Search</button>
+    </section>
+
+    <section id="result"></section>
+      
+  </main>
+
+  <footer class="modern-footer">
+      <div class="footer-bottom">
+          <p>&copy; <span id="current-year"></span> Ivan Chulde | Ambato-Ecuador.</p>
+          <p>Last Modified in: <span id="lastModified"></span></p>
+      </div>
+  </footer>
+
+  <script type="module" src="src/js/main.js"></script>
+
+</body>
+</html>
