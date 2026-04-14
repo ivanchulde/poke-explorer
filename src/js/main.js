@@ -1,6 +1,8 @@
 import { getPokemon } from "./api/pokeApi.js";
 import { renderPokemon } from "./components/pokemonCard.js";
 import { updateFooterDates } from "./components/time.js";
+import { showCapture } from "./components/capture.js";
+import { loadPokedex } from "./components/pokedex.js";
 
 /* =========================
    SELECTORES
@@ -53,7 +55,9 @@ document.getElementById("mapBtn").addEventListener("click", (e) => {
 document.getElementById("favBtn").addEventListener("click", (e) => {
   showSection(fav);
   setActive(e.target);
-  loadPokedex();
+
+  // 🔥 carga pokedex
+  loadPokedex(favContainer, modal, modalBody);
 });
 
 /* =========================
@@ -80,100 +84,11 @@ zones.forEach(zone => {
     const randomId = Math.floor(Math.random() * 151) + 1;
 
     const pokemon = await getPokemon(randomId);
-    showCapture(pokemon, zoneName);
+
+    // 🔥 usando componente externo
+    showCapture(pokemon, zoneName, captureResult);
   });
 });
-
-function showCapture(pokemon, zone) {
-  captureResult.innerHTML = `
-    <div class="card">
-      <h2>${pokemon.name.toUpperCase()}</h2>
-      <img src="${pokemon.sprites.front_default}" />
-      <p>📍 Found in ${zone}</p>
-
-      <button id="captureBtn" class="pokeball-btn">
-        <span class="pokeball"></span>
-        Capture
-      </button>
-    </div>
-  `;
-
-  document.getElementById("captureBtn").addEventListener("click", () => {
-    savePokemon(pokemon);
-  });
-}
-
-function savePokemon(pokemon) {
-  let saved = JSON.parse(localStorage.getItem("pokedex")) || [];
-
-  if (saved.find(p => p.id === pokemon.id)) {
-    alert("Already captured!");
-    return;
-  }
-
-  saved.push({
-    id: pokemon.id,
-    name: pokemon.name,
-    image: pokemon.sprites.front_default
-  });
-
-  localStorage.setItem("pokedex", JSON.stringify(saved));
-  alert("Pokémon captured! 🎉");
-}
-
-/* =========================
-   MY POKEDEX + MODAL
-========================= */
-function loadPokedex() {
-  const saved = JSON.parse(localStorage.getItem("pokedex")) || [];
-
-  if (saved.length === 0) {
-    favContainer.innerHTML = "<p>No Pokémon captured yet 😢</p>";
-    return;
-  }
-
-  favContainer.innerHTML = saved.map(pokemon => `
-    <div class="fav-card" data-id="${pokemon.id}">
-      <h3>${pokemon.name.toUpperCase()}</h3>
-      <img src="${pokemon.image}" />
-      <button class="delete-btn" data-id="${pokemon.id}">
-        ❌ Remove
-      </button>
-    </div>
-  `).join("");
-
-  /* DELETE */
-  document.querySelectorAll(".delete-btn").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation(); // 🔥 evita abrir modal
-      removePokemon(btn.dataset.id);
-    });
-  });
-
-  /* CLICK CARD → MODAL */
-  document.querySelectorAll(".fav-card").forEach(card => {
-    card.addEventListener("click", async () => {
-      const id = card.dataset.id;
-      const pokemon = await getPokemon(id);
-
-      modalBody.innerHTML = ""; // limpiar
-
-      renderPokemon(pokemon, "#modalBody");
-
-      modal.classList.remove("hidden");
-
-      modal.classList.remove("hidden");
-    });
-  });
-}
-
-function removePokemon(id) {
-  let saved = JSON.parse(localStorage.getItem("pokedex")) || [];
-  saved = saved.filter(p => p.id != id);
-
-  localStorage.setItem("pokedex", JSON.stringify(saved));
-  loadPokedex();
-}
 
 /* =========================
    MODAL CLOSE
