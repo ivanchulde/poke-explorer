@@ -237,7 +237,7 @@ header {
   height: 100%;
   width: 0;
   border-radius: 10px;
-  animation: growBar 1s ease forwards;
+  animation: growBar 2s ease forwards;
 }
 
 /* COLORES POR STAT */
